@@ -1,6 +1,6 @@
 const accountRouter = require("./account.route")
 const profileRouter = require("./profile.route")
-
+const authRouter = require("./auth.route")
 
 /**
  * Root of routes for API endpoint
@@ -12,6 +12,9 @@ function route(app) {
 
   // Profile router api
   app.use("/api/profiles", profileRouter);
+
+  // Auth router api
+  app.use("/api/auth", authRouter);
 }
 
 module.exports = route;

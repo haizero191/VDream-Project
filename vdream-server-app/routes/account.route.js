@@ -3,15 +3,20 @@ const router = express.Router();
 const AccountController = require("../controllers/account.controller");
 const AccountMiddleware = require("../middlewares/account.middleware");
 const { accountValidateSchema } = require("../validations/account.validation");
+const authMiddleWare = require("../middlewares/auth.middleware");
+
 
 
 
 
 // Account Login
-router.post("/login", AccountController.register);
+router.post("/test", AccountController.test);
+
+
+// Account Login
+router.post("/login", AccountController.login);
 
 // Account Register
-// router.post('/register', accountMiddleware.checkDataValid, accountMiddleware.checkDataExist, accountMiddleware.verifyEmail, AccountController.register);
 router.post(
   "/register",
   accountValidateSchema,

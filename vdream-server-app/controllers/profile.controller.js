@@ -21,8 +21,7 @@ class ProfileController {
     const organizationProfile = new OrganizationProfile();
     personalProfile.save()
     organizationProfile.save()
-    console.log(personalProfile);
-    console.log(organizationProfile);
+
     res.json("hehehe");
   }
 }
