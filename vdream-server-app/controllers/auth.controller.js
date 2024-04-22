@@ -24,7 +24,6 @@ class AuthController {
         process.env.SECRET_KEY,
         { expiresIn: "1m" } // Set access token expiration (e.g., 1 minute)
       );
-
       // 4. Respond with the new access token
       res.json(FormResponse(true, newAccessToken, "Refresh token success"));
     } catch (error) {
