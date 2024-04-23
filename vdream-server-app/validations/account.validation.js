@@ -1,5 +1,5 @@
 const { checkSchema } = require('express-validator');
-const Account = require('../models/account.model');
+const Account = require('../models/Account.model');
 
 
 const checkIfEmailExists = async (value) => {
@@ -9,13 +9,6 @@ const checkIfEmailExists = async (value) => {
   }
 }
 
-const isValidAccountType = async (value) => {
-  const accountTypes = ["Personal", "Organization"]
-  var result = accountTypes.find(type => type === value);
-  if(result === undefined || result === null) {
-    throw new Error('Type field only includes [Personal] or [Organization]');
-  }
-}
 
 const accountValidateSchema = checkSchema({
   Email: {
@@ -24,14 +17,6 @@ const accountValidateSchema = checkSchema({
     },
     custom: {
       options: checkIfEmailExists
-    },
-  },
-  Type: {
-    notEmpty: {
-      errorMessage: "Type is required"
-    },
-    custom: {
-      options: isValidAccountType
     },
   },
   Password: {

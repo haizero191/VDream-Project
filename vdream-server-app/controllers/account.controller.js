@@ -1,4 +1,4 @@
-const Account = require("../models/account.model");
+const Account = require("../models/Account.model");
 const FormResponse = require("../utils/response/FormResponse");
 const { hashPassword, verifyPassword } = require("../utils/bcrypt");
 const VerifyCode = require("../models/verify_code.model");
@@ -76,7 +76,7 @@ class AccountController {
 
   async register(req, res) {
     const result = validationResult(req);
-    const { Email, Password, Type } = req.body;
+    const { Email, Password } = req.body;
 
     // Handle Errors
     if (result.errors && result.errors.length > 0) {
@@ -87,8 +87,7 @@ class AccountController {
         var hass = await hashPassword(Password);
         var newAccount = new Account({
           Email: Email,
-          Password: hass,
-          Type: Type,
+          Password: hass
         });
         newAccount.save();
         res.json(FormResponse(true, null, "Verifying email..."));

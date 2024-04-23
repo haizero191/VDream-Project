@@ -12,7 +12,8 @@ const accountSchema = new mongoose.Schema({
   },
   Type: {
     type: String,
-    required: true,
+    required: false,
+    default: null
   },
   IsActived: {
     type: Boolean,
@@ -32,8 +33,6 @@ const accountSchema = new mongoose.Schema({
     default: Date.now
   }
 });
-
-
 
 const Account = mongoose.model("Account", accountSchema);
 

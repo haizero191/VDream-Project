@@ -1,9 +1,7 @@
-const Account = require("../models/account.model");
 const { generateVerificationCode } = require("../utils/functions");
 const emailSender = require("../utils/mailSender/verifyEmail");
 const VerifyCode = require("../models/verify_code.model");
-const { validationResult, body } = require("express-validator");
-const FormResponse = require("../utils/response/FormResponse");
+const { validationResult } = require("express-validator");
 
 /**
  * Middleware verify email

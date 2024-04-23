@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const profileSchema = new mongoose.Schema({
+  Email: {
+    type: String,
+    required: true,
+    default: null,
+  },
   Address: {
     type: String,
     required: false,
@@ -15,6 +20,14 @@ const profileSchema = new mongoose.Schema({
     type: String,
     required: false,
     default: null,
+  },
+  CreatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+  UpdatedAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
@@ -57,16 +70,15 @@ const OrganizationProfileSchema = profileSchema.discriminator(
       required: false,
       default: 0,
     },
-    //   org_members: {
-    //     type: Boolean,
-    //     required: false,
-    //     default: false
-    //   }
+    // Org_members: {
+    //   type: Boolean,
+    //   required: false,
+    //   default: false,
+    // },
   })
 );
 
-const Profile = mongoose.model("Profile", profileSchema);
+exports.Profile = mongoose.model("Profile", profileSchema);
 
-
-exports.PersonalProfile = mongoose.model('PersonalProfile');
-exports.OrganizationProfile = mongoose.model('OrganizationProfile');
+exports.PersonalProfile = mongoose.model("PersonalProfile");
+exports.OrganizationProfile = mongoose.model("OrganizationProfile");
