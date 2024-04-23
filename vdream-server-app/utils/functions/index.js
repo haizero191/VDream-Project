@@ -13,8 +13,6 @@ const isDataEmptyOrNull = (data) => {
     }
 }
 
-
-
 /**
  * Check if an email is valid or not
  * @param {string} email Email address

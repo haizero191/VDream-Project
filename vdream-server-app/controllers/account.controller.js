@@ -125,7 +125,9 @@ class AccountController {
     }
   }
 
-  async logout(req, res) {}
+  async logout(req, res) {
+    
+  }
 
   async test(req, res) {
     res.json("testing...");
