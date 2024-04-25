@@ -1,0 +1,80 @@
+.Register {
+
+    .register-container {
+        height: 100vh;
+        .form-step-group {
+            width: 100%;
+            padding: 5%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .form-step-group-container {
+                width: 80%;
+            }
+            .MSContent {
+                width: 100%;
+
+            }
+            .MSNextButton {
+                margin-top: 20px;
+                display: flex;
+                justify-content: flex-end;
+                width: 100%;
+            }
+        }
+        .form-step-desc {
+            padding: 5%;
+            height: 100%;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+            display: flex;
+            flex-direction: column;
+            .form-step-desc-container {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                .MSIcon {
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 10px;
+                    i {
+                        font-size: 80px;
+                        color: #386DFE;
+                    }
+                }
+                .MSTitle {
+                    text-align: center;
+                    margin-bottom: 10px;
+                   
+                }
+                .MSDesc {
+                    text-align: center;
+                    color: rgba(0, 0, 0, 0.772);
+                    pre {
+                        text-wrap: wrap;
+                    }
+                }
+            }
+            .bottom-title {
+                padding: 8px 0px;
+                display: flex;
+                gap: 40px;
+                align-items: center;
+                justify-content: center;
+                h2 {
+                    text-transform: uppercase;
+                }
+                p {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+
+    .EmailForm_Option {
+        width: 100%;
+
+    }
+} 

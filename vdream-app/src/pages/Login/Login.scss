@@ -13,25 +13,19 @@
                 width: 480px;
                 margin: 0 auto;
                 transform: translateY(-18%);
+
                 h2 {
                     margin-bottom: 40px;
                     text-align: center;
                 }
-                .login-field {
-                    margin-bottom: 20px;
-                    p {
-                        font-size: 12px;
-                        opacity: 0.8;
-                    }
-                    input {
-                        width: 100%!important;
-                    }
+                .login-fields {
+                    width: 100%;
                 }
                 .actions {
                     width: 100%;
                     display: flex;
-                    justify-content: space-between;
-                    margin: 8px;
+                    justify-content: space-between; 
+                    margin-top: 10px;
                     margin-bottom: 30px;
                     a {
                         cursor: pointer;

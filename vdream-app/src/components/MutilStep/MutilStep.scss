@@ -1,0 +1,51 @@
+.MSNav {
+
+   
+    .MSNav-container {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        .step {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            i {
+                color: white;
+                display: none;
+                font-size: 18px;
+            }
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .step-actived {
+            border: 2px solid #386DFE;
+            color: #386DFE;
+        }
+
+        .step-finished {
+            border: 2px solid #386DFE;
+            background-color: #386DFE;
+            color: #386DFE;
+            i {
+                display: block;
+            }
+            span {
+                display: none;
+            }
+        }
+    }
+}
+
+.MutilStep {
+    height: 100%;
+}
+
+.MSDesc {
+    p {
+        text-align: center;
+    }
+}

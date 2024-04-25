@@ -1,6 +1,8 @@
 import React from "react";
 import "./Login.scss";
 import { styled } from "@mui/material/styles";
+
+// Import form UI from material
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
@@ -11,10 +13,14 @@ import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
+
+
+
+
 
 const Login = () => {
   const [showPassword, setShowPassword] = React.useState(false);
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   return (
@@ -24,13 +30,13 @@ const Login = () => {
           <div className="logo">Logo</div>
           <div className="login-form-container">
             <h2>Login your account</h2>
-            <Box>
+            <Box className="Login-fields">
               <TextField
                 label="Email"
                 id="outlined-start-adornment"
-                sx={{ m: 1, width: "100%" }}
+                sx={{ mb: 1, width: "100%" }}
               />
-              <FormControl sx={{ m: 1, width: "100%" }} variant="outlined">
+              <FormControl sx={{ mb: 1, width: "100%" }} variant="outlined">
                 <InputLabel htmlFor="outlined-adornment-password">
                   Password
                 </InputLabel>
@@ -53,13 +59,13 @@ const Login = () => {
                 />
               </FormControl>
               <div className="actions">
-                <a>Forgot password?</a>
-                <a>Don't have an account? Sign Up</a>
+                <Link>Forgot password?</Link>
+                <Link to="/register">Don't have an account? Sign Up</Link>
               </div>
               <Button
                 variant="contained"
                 sx={{
-                  m: 1,
+                  mb: 1,
                   width: "100%",
                   background: "black",
                   height: "55px",
