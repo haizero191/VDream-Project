@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./Register.scss";
+import axios from "axios";
 
 // Import Grid layout from material UI
-
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
-
+import Button from "@mui/material/Button";
 
 // Usable Mutil-step-form
 import {
@@ -25,19 +17,74 @@ import {
   MSTitle,
   MSDesc,
   MSIcon,
+  useMS,
 } from "../../components/MutilStep/MutilStep";
 
-const EmailForm_Option = () => {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+const Register_Form_1 = ({ option }) => {
+  const [formData, setFormData] = useState({
+    Email: "",
+    Password: "",
+  });
+  const instance = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL, // URL cơ sở cho API của bạn
+    timeout: 10000, // Thời gian chờ mặc định (tính bằng mili giây)
+    headers: {
+      'Content-Type': 'application/json' // Loại nội dung mặc định
+    }
+  });
+  const [statusForm, setStatusForm] = useState(null);
+
+  const MS = useMS();
+
+  useEffect(() => {
+
+  
+
+  }, [formData]);
+
+  const onHandleForm = () => {
+    if (statusForm === "success") {
+      const form = document.querySelector(".EmailForm_Option");
+      const elements = form.querySelectorAll("[data-ms]");
+      const dataObject = {};
+      elements.forEach((element) => {
+        const dataMsValue = element.getAttribute("data-ms");
+        dataObject[dataMsValue] = element.value;
+      });
+
+      setFormData(dataObject);
+
+      instance.post('/api/accounts/register', dataObject).then(response => {
+        if(!response.data.success) {
+          alert(response.data.message)
+        }
+        else {
+          MS.next();
+        }
+      })
+
+    }
+  };
+
+  const handleConfirmPasswordChange = (event) => {
+    const passwordInput = document.querySelector('input[data-ms="Password"]');
+    var passwordInputValue = passwordInput.value;
+    if (event.target.value === passwordInputValue) {
+      setStatusForm("success");
+    } else setStatusForm("error");
+
+    if (event.target.value === "") {
+      setStatusForm(null);
+    }
+  };
+
   return (
     <div className="EmailForm_Option">
       <Box
         component="form"
         sx={{
-          "& > :not(style)": { width: "100%" },
+          "& > :not(style)": { mb: 3, width: "100%" },
         }}
-        noValidate
         autoComplete="off"
       >
         <TextField
@@ -46,69 +93,49 @@ const EmailForm_Option = () => {
           variant="outlined"
           inputProps={{ "data-ms": "Email" }}
         />
-        <FormControl sx={{ mt: 3, width: "100%" }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">
-            Password
-          </InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={showPassword ? "text" : "password"}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  // onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-          />
-        </FormControl>
-        <FormControl sx={{ mt: 3, width: "100%" }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">
-            Confirm Password
-          </InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={showPassword ? "text" : "Confirm Password"}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  // onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Confirm Password"
-          />
-        </FormControl>
+
+        <TextField
+          id="outlined-basic"
+          label="Password"
+          variant="outlined"
+          type="password"
+          inputProps={{ "data-ms": "Password" }}
+        />
+
+        <TextField
+          id="outlined-basic"
+          label="Confirm Password"
+          variant="outlined"
+          type="password"
+          helperText={
+            statusForm === "success"
+              ? "Match"
+              : statusForm === "error"
+              ? "Not match"
+              : ""
+          }
+          color={statusForm}
+          focused={statusForm ? true : false}
+          onChange={handleConfirmPasswordChange}
+        />
       </Box>
+
+      <Button variant="contained" onClick={onHandleForm}>
+        next
+      </Button>
     </div>
   );
 };
 
 const Register = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [initConfig, setInitConfig] = useState([
+  const initConfig = [
     {
       id: "register-form-1",
-      title: "Enter your email",
-      desc: "Enter the email address you want to use to create the account, the email address is unique, and make sure the email hasn't been created before.",
+      title: "Create your account",
+      desc: "Register your account with email address and password.",
       status: "active",
       icon: "bi bi-envelope-at",
-      render: () => <EmailForm_Option />,
-      handler: (formData) => {
-        console.log(formData);
-        return true;
-      },
+      render: (option) => <Register_Form_1 option={option} />,
     },
     {
       id: "register-form-2",
@@ -117,10 +144,6 @@ const Register = () => {
       status: "coming",
       icon: "bi bi-envelope-check",
       render: () => <h1>Form 2</h1>,
-      data: {},
-      handler: (form) => {
-        return true;
-      },
     },
     {
       id: "register-form-3",
@@ -131,10 +154,6 @@ const Register = () => {
       status: "coming",
       icon: "bi bi-person-bounding-box",
       render: () => <h1>Form 3</h1>,
-      data: {},
-      handler: (form) => {
-        return true;
-      },
     },
     {
       id: "register-form-4",
@@ -143,26 +162,8 @@ const Register = () => {
       status: "coming",
       icon: "bi bi-info-circle",
       render: () => <h1>Form 4</h1>,
-      data: {},
-      handler: (form) => {
-        return true;
-      },
     },
-  ]);
-
-  useEffect(() => {
-    if (currentStep > 0) {
-      var formlist = initConfig;
-      formlist[currentStep].status = "active";
-      formlist[currentStep - 1].status = "finished";
-      setInitConfig([...formlist]);
-    }
-  }, [currentStep]);
-
-  const onNextStepHandler = () => {
-    // Async handle here...
-    return true;
-  };
+  ];
 
   return (
     <div className="Register">
@@ -175,7 +176,6 @@ const Register = () => {
                   {/* Form content render */}
                   <div className="form-step-group-container">
                     <MSContent />
-                    <MSNextButton />
                   </div>
                 </div>
               </Grid>

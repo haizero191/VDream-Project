@@ -6,6 +6,24 @@ import Button from "@mui/material/Button";
 import { createContext } from "react";
 const MutilStepContext = createContext();
 
+export const useMS = () => {
+  const { options, setOptions } = useContext(MutilStepContext);
+  return {
+    next : () => {
+      var updateData = options;
+      let index = updateData.findIndex((option) => {
+        return option.status === "active";
+      });
+  
+      if (index < updateData.length - 1) {
+        updateData[index].status = "finished";
+        updateData[index + 1].status = "active";
+        setOptions(updateData);
+      }
+    }
+  };
+};
+
 export const MSNav = () => {
   const { options, setOptions } = useContext(MutilStepContext);
 
@@ -68,10 +86,10 @@ export const MSContent = () => {
   const { options, setOptions } = useContext(MutilStepContext);
   return (
     <div className="MSContent">
-      {options.map((content, index) => {
+      {options.map((option, index) => {
         return (
-          <div className="form-step" id={content.id} key={index}>
-            {content.render()}
+          <div className="form-step" id={option.id} key={index}>
+            {option.render(option)}
           </div>
         );
       })}
@@ -82,31 +100,29 @@ export const MSContent = () => {
 export const MSNextButton = ({ label }) => {
   const { options, setOptions } = useContext(MutilStepContext);
 
+  useEffect(() => {
+    console.log(options);
+  });
+
   const onNextStep = (option) => {
-    var form = document.querySelector(`#${option.id}`);
-    const elements = form.querySelectorAll("[data-ms]");
-    const dataObject = {};
-
-    elements.forEach((element) => {
-      const dataMsValue = element.getAttribute("data-ms");
-
-
-      dataObject[dataMsValue] = element.value;
-    });
-
-
-    if (option.handler(dataObject)) {
-      var updateData = options;
-      let index = updateData.findIndex((option) => {
-        return option.status === "active";
-      });
-
-      if (index < updateData.length - 1) {
-        updateData[index].status = "finished";
-        updateData[index + 1].status = "active";
-        setOptions(updateData);
-      }
-    }
+    // var form = document.querySelector(`#${option.id}`);
+    // const elements = form.querySelectorAll("[data-ms]");
+    // const dataObject = {};
+    // elements.forEach((element) => {
+    //   const dataMsValue = element.getAttribute("data-ms");
+    //   dataObject[dataMsValue] = element.value;
+    // });
+    // if (option.handler(dataObject)) {
+    //   var updateData = options;
+    //   let index = updateData.findIndex((option) => {
+    //     return option.status === "active";
+    //   });
+    //   if (index < updateData.length - 1) {
+    //     updateData[index].status = "finished";
+    //     updateData[index + 1].status = "active";
+    //     setOptions(updateData);
+    //   }
+    // }
   };
 
   return (
@@ -114,7 +130,11 @@ export const MSNextButton = ({ label }) => {
       {options.map((option) => {
         if (option.status === "active") {
           return (
-            <Button variant="contained" onClick={() => onNextStep(option)} key={'next-button-' + option.id} > 
+            <Button
+              variant="contained"
+              onClick={() => onNextStep(option)}
+              key={"next-button-" + option.id}
+            >
               {label ? label : "next"}
             </Button>
           );
