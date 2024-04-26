@@ -13,7 +13,6 @@ import {
   MSContrainer,
   MSNav,
   MSContent,
-  MSNextButton,
   MSTitle,
   MSDesc,
   MSIcon,
@@ -25,6 +24,9 @@ const Register_Form_1 = ({ option }) => {
     Email: "",
     Password: "",
   });
+  const [statusForm, setStatusForm] = useState(null);
+
+
   const instance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL, // URL cơ sở cho API của bạn
     timeout: 10000, // Thời gian chờ mặc định (tính bằng mili giây)
@@ -32,38 +34,62 @@ const Register_Form_1 = ({ option }) => {
       'Content-Type': 'application/json' // Loại nội dung mặc định
     }
   });
-  const [statusForm, setStatusForm] = useState(null);
-
   const MS = useMS();
+
+
 
   useEffect(() => {
 
-  
 
   }, [formData]);
 
+
+
   const onHandleForm = () => {
     if (statusForm === "success") {
-      const form = document.querySelector(".EmailForm_Option");
-      const elements = form.querySelectorAll("[data-ms]");
-      const dataObject = {};
-      elements.forEach((element) => {
-        const dataMsValue = element.getAttribute("data-ms");
-        dataObject[dataMsValue] = element.value;
-      });
+      // const form = document.querySelector(".EmailForm_Option");
+      // const elements = form.querySelectorAll("[data-ms]");
+      // const dataObject = {};
+      // elements.forEach((element) => {
+      //   const dataMsValue = element.getAttribute("data-ms");
+      //   dataObject[dataMsValue] = element.value;
+      // });
 
-      setFormData(dataObject);
+      // setFormData(dataObject);
 
-      instance.post('/api/accounts/register', dataObject).then(response => {
-        if(!response.data.success) {
-          alert(response.data.message)
-        }
-        else {
-          MS.next();
-        }
-      })
+      // instance.post('/api/accounts/register', dataObject).then(response => {
+      //   if(!response.data.success) {
+      //     alert(response.data.message)
+      //   }
+      //   else {
+      //     MS.next();
+      //   }
+      // })
+
+
 
     }
+
+    const form = document.querySelector(".EmailForm_Option");
+    const elements = form.querySelectorAll("[data-ms]");
+    const dataObject = {};
+    elements.forEach((element) => {
+      const dataMsValue = element.getAttribute("data-ms");
+      dataObject[dataMsValue] = element.value;
+    });
+
+    setFormData(dataObject);
+
+    instance.post('/api/accounts/register', dataObject).then(response => {
+      console.log(response.data)
+      if(!response.data.success) {
+        alert(response.data.message)
+      }
+      else {
+        MS.next();
+      }
+    })
+
   };
 
   const handleConfirmPasswordChange = (event) => {
