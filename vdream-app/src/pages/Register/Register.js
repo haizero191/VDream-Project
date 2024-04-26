@@ -25,54 +25,62 @@ const Register_Form_1 = ({ option }) => {
     Password: "",
   });
   const [statusForm, setStatusForm] = useState(null);
-
+  const [statusFields, setStatusFields] = useState({
+    Email: {
+      status: null,
+      error: true,
+      message: "",
+    },
+    Password: {
+      status: null,
+      error: true,
+      message: "",
+    },
+    ConfirmPassword: {
+      status: null,
+      error: true,
+      message: "",
+    },
+  });
 
   const instance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL, // URL cơ sở cho API của bạn
     timeout: 10000, // Thời gian chờ mặc định (tính bằng mili giây)
     headers: {
-      'Content-Type': 'application/json' // Loại nội dung mặc định
-    }
+      "Content-Type": "application/json", // Loại nội dung mặc định
+    },
   });
   const MS = useMS();
 
-
-
   useEffect(() => {
-
-
+    checkFormValid(statusFields)
+    // if (checkFormValid(statusFields)) {
+    //   instance.post("/api/accounts/register", formData).then((response) => {
+    //     if (!response.data.success) {
+    //       alert(response.data.message);
+    //     } else {
+    //       MS.next();
+    //     }
+    //   });
+    // }
   }, [formData]);
 
+  // Check form submit valid
+  const checkFormValid = (obj) => {
+    return Object.values(obj).reduce((acc, fieldValue) => {
+      console.log(fieldValue.status === "success" )
+      return (
+        acc && fieldValue.status === "success" && fieldValue.error === false
+      );
+    }, true);
+  };
 
-
+  // Xử lí submit form
   const onHandleForm = () => {
-    if (statusForm === "success") {
-      // const form = document.querySelector(".EmailForm_Option");
-      // const elements = form.querySelectorAll("[data-ms]");
-      // const dataObject = {};
-      // elements.forEach((element) => {
-      //   const dataMsValue = element.getAttribute("data-ms");
-      //   dataObject[dataMsValue] = element.value;
-      // });
-
-      // setFormData(dataObject);
-
-      // instance.post('/api/accounts/register', dataObject).then(response => {
-      //   if(!response.data.success) {
-      //     alert(response.data.message)
-      //   }
-      //   else {
-      //     MS.next();
-      //   }
-      // })
-
-
-
-    }
-
     const form = document.querySelector(".EmailForm_Option");
     const elements = form.querySelectorAll("[data-ms]");
     const dataObject = {};
+
     elements.forEach((element) => {
       const dataMsValue = element.getAttribute("data-ms");
       dataObject[dataMsValue] = element.value;
@@ -80,28 +88,113 @@ const Register_Form_1 = ({ option }) => {
 
     setFormData(dataObject);
 
-    instance.post('/api/accounts/register', dataObject).then(response => {
-      console.log(response.data)
-      if(!response.data.success) {
-        alert(response.data.message)
-      }
-      else {
-        MS.next();
-      }
-    })
-
+    // instance.post("/api/accounts/register", dataObject).then((response) => {
+    //   console.log(response.data);
+    //   if (!response.data.success) {
+    //     alert(response.data.message);
+    //   } else {
+    //     MS.next();
+    //   }
+    // });
   };
 
+  // Handle confirm password input change
   const handleConfirmPasswordChange = (event) => {
     const passwordInput = document.querySelector('input[data-ms="Password"]');
     var passwordInputValue = passwordInput.value;
+
     if (event.target.value === passwordInputValue) {
-      setStatusForm("success");
-    } else setStatusForm("error");
+      setStatusFields({
+        ...statusFields,
+        ConfirmPassword: { status: "success", error: false, message: "" },
+      });
+    } else
+      setStatusFields({
+        ...statusFields,
+        ConfirmPassword: {
+          status: "error",
+          error: true,
+          message: "Password not match",
+        },
+      });
 
     if (event.target.value === "") {
-      setStatusForm(null);
+      setStatusFields({
+        ...statusFields,
+        ConfirmPassword: {
+          status: "error",
+          error: true,
+          message: "Field is required",
+        },
+      });
     }
+  };
+
+  // Handle password input change
+  const handlePasswordChange = (event) => {
+    if (event.target.value.length < 8) {
+      setStatusFields({
+        ...statusFields,
+        Password: {
+          status: "error",
+          error: true,
+          message: "Field must be 8 characters in length",
+        },
+      });
+    } else {
+      setStatusFields({
+        ...statusFields,
+        Password: { status: "success", error: false, message: "" },
+      });
+    }
+
+    if (event.target.value === "") {
+      setStatusFields({
+        ...statusFields,
+        Password: {
+          status: "error",
+          error: true,
+          message: "Field is required",
+        },
+      });
+    }
+  };
+
+  const validateEmail = (email) => {
+    const re =
+      /^(([^<>()\[\]\\.,;:\s@"]+)(\.[^<>()\[\]\\.,;:\s@"]+)*)@(([^<>()\[\]\\.,;:\s@"]+)(\.[^<>()\[\]\\.,;:\s@"]+)*)$/;
+    return re.test(email);
+  };
+
+  // Handle email input change
+  const handleEmailChange = (event) => {
+    if (event.target.value === "") {
+      setStatusFields({
+        ...statusFields,
+        Email: { status: "error", error: true, message: "Field is required" },
+      });
+    } else {
+      if (!validateEmail(event.target.value)) {
+        setStatusFields({
+          ...statusFields,
+          Email: { status: "error", error: true, message: "Invalid email" },
+        });
+      }
+      else {
+        setStatusFields({
+          ...statusFields,
+          Email: { status: "success", error: false, message: "" },
+        });
+      }
+    }
+  };
+
+  // Handle field input blur
+  const handleFieldBlur = (event) => {
+    // setStatusFields({
+    //   ...statusFields,
+    //   [event.target.name]: { error: false, message: "" },
+    // });
   };
 
   return (
@@ -118,6 +211,13 @@ const Register_Form_1 = ({ option }) => {
           label="Email"
           variant="outlined"
           inputProps={{ "data-ms": "Email" }}
+          name="Email"
+          helperText={statusFields["Email"].message}
+          color={statusFields["Email"].status}
+          onChange={handleEmailChange}
+          onBlur={handleFieldBlur}
+          onFocus={handleEmailChange}
+          focused={statusFields['Email'].status ? true : false}
         />
 
         <TextField
@@ -126,6 +226,13 @@ const Register_Form_1 = ({ option }) => {
           variant="outlined"
           type="password"
           inputProps={{ "data-ms": "Password" }}
+          helperText={statusFields["Password"].message}
+          color={statusFields["Password"].status}
+          onChange={handlePasswordChange}
+          onBlur={handleFieldBlur}
+          onFocus={handlePasswordChange}
+          focused={statusFields['Password'].status ? true : false}
+          name="Password"
         />
 
         <TextField
@@ -133,16 +240,13 @@ const Register_Form_1 = ({ option }) => {
           label="Confirm Password"
           variant="outlined"
           type="password"
-          helperText={
-            statusForm === "success"
-              ? "Match"
-              : statusForm === "error"
-              ? "Not match"
-              : ""
-          }
-          color={statusForm}
-          focused={statusForm ? true : false}
+          helperText={statusFields["ConfirmPassword"].message}
+          color={statusFields["ConfirmPassword"].status}
+          focused={statusFields['ConfirmPassword'].status ? true : false}
           onChange={handleConfirmPasswordChange}
+          onBlur={handleFieldBlur}
+          onFocus={handleConfirmPasswordChange}
+          name="ConfirmPassword"
         />
       </Box>
 
