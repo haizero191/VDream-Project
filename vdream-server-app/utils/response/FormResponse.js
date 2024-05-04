@@ -7,11 +7,12 @@
  * @param {string} message Message of response form
  * @returns Return a Object
  */
-const FormResponse = (success, data, message) => {
+const FormResponse = (success, data, message, errors) => {
   return {
     success: success || false,
     data: data || null,
     message: message || "No message response !",
+    errors: errors ? errors : []
   };
 };
 

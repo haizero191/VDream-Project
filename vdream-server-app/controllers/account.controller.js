@@ -80,7 +80,7 @@ class AccountController {
 
     // Handle Errors
     if (result.errors && result.errors.length > 0) {
-      res.json(FormResponse(false, result.errors, "Data Error"));
+      res.json(FormResponse(false, null, "Data Error", result.errors));
     } else {
       // Handler Create new Account
       try {

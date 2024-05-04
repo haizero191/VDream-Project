@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Register.scss";
-import axios from "axios";
 
 // Import Grid layout from material UI
 import Box from "@mui/material/Box";
@@ -19,12 +18,25 @@ import {
   useMS,
 } from "../../components/MutilStep/MutilStep";
 
+// Import Redux
+import { useDispatch, useSelector } from "react-redux";
+import register from "../../redux/services/register.service";
+import Loading from "../../components/Loading/Loading";
+
+// Import react-code-input
+import ReactCodeInput from "react-code-input";
+
 const Register_Form_1 = ({ option }) => {
+  const dispatch = useDispatch();
+  const MS = useMS();
+  const data = useSelector((state) => state.register);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     Email: "",
     Password: "",
   });
-  const [statusForm, setStatusForm] = useState(null);
+
   const [statusFields, setStatusFields] = useState({
     Email: {
       status: null,
@@ -43,32 +55,47 @@ const Register_Form_1 = ({ option }) => {
     },
   });
 
-  const instance = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL, // URL cơ sở cho API của bạn
-    timeout: 10000, // Thời gian chờ mặc định (tính bằng mili giây)
-    headers: {
-      "Content-Type": "application/json", // Loại nội dung mặc định
-    },
-  });
-  const MS = useMS();
+  useEffect(() => {
+    if (checkFormValid(statusFields)) {
+      dispatch(
+        register.createAccount({
+          Email: formData.Email,
+          Password: formData.Password,
+        })
+      );
+    }
+  }, [formData]);
 
   useEffect(() => {
-    checkFormValid(statusFields)
-    // if (checkFormValid(statusFields)) {
-    //   instance.post("/api/accounts/register", formData).then((response) => {
-    //     if (!response.data.success) {
-    //       alert(response.data.message);
-    //     } else {
-    //       MS.next();
-    //     }
-    //   });
-    // }
-  }, [formData]);
+    setIsLoading(data.isLoading);
+
+    if (!data.isLoading) {
+      if (data.dataProcess[0]) {
+        if (!data.dataProcess[0].success) {
+          var errorStack = data.dataProcess[0].error.stack;
+          handleFormError(errorStack);
+        } else {
+          localStorage.setItem("VDREAM_EMAIL_REGISTER", formData.Email);
+          MS.next();
+        }
+      }
+    }
+  }, [data]);
+
+  const handleFormError = (stack) => {
+    stack.map((error) => {
+      if (error.type === "field") {
+        setStatusFields({
+          ...statusFields,
+          [error.path]: { status: "error", error: true, message: error.msg },
+        });
+      }
+    });
+  };
 
   // Check form submit valid
   const checkFormValid = (obj) => {
     return Object.values(obj).reduce((acc, fieldValue) => {
-      console.log(fieldValue.status === "success" )
       return (
         acc && fieldValue.status === "success" && fieldValue.error === false
       );
@@ -77,7 +104,7 @@ const Register_Form_1 = ({ option }) => {
 
   // Xử lí submit form
   const onHandleForm = () => {
-    const form = document.querySelector(".EmailForm_Option");
+    const form = document.querySelector(".Register_Form_1");
     const elements = form.querySelectorAll("[data-ms]");
     const dataObject = {};
 
@@ -86,16 +113,7 @@ const Register_Form_1 = ({ option }) => {
       dataObject[dataMsValue] = element.value;
     });
 
-    setFormData(dataObject);
-
-    // instance.post("/api/accounts/register", dataObject).then((response) => {
-    //   console.log(response.data);
-    //   if (!response.data.success) {
-    //     alert(response.data.message);
-    //   } else {
-    //     MS.next();
-    //   }
-    // });
+    setFormData({ ...dataObject });
   };
 
   // Handle confirm password input change
@@ -179,8 +197,7 @@ const Register_Form_1 = ({ option }) => {
           ...statusFields,
           Email: { status: "error", error: true, message: "Invalid email" },
         });
-      }
-      else {
+      } else {
         setStatusFields({
           ...statusFields,
           Email: { status: "success", error: false, message: "" },
@@ -189,16 +206,9 @@ const Register_Form_1 = ({ option }) => {
     }
   };
 
-  // Handle field input blur
-  const handleFieldBlur = (event) => {
-    // setStatusFields({
-    //   ...statusFields,
-    //   [event.target.name]: { error: false, message: "" },
-    // });
-  };
-
   return (
-    <div className="EmailForm_Option">
+    <div className="Register_Form_1">
+      {isLoading ? <Loading /> : <></>}
       <Box
         component="form"
         sx={{
@@ -215,9 +225,8 @@ const Register_Form_1 = ({ option }) => {
           helperText={statusFields["Email"].message}
           color={statusFields["Email"].status}
           onChange={handleEmailChange}
-          onBlur={handleFieldBlur}
           onFocus={handleEmailChange}
-          focused={statusFields['Email'].status ? true : false}
+          focused={statusFields["Email"].status ? true : false}
         />
 
         <TextField
@@ -229,9 +238,8 @@ const Register_Form_1 = ({ option }) => {
           helperText={statusFields["Password"].message}
           color={statusFields["Password"].status}
           onChange={handlePasswordChange}
-          onBlur={handleFieldBlur}
           onFocus={handlePasswordChange}
-          focused={statusFields['Password'].status ? true : false}
+          focused={statusFields["Password"].status ? true : false}
           name="Password"
         />
 
@@ -242,9 +250,8 @@ const Register_Form_1 = ({ option }) => {
           type="password"
           helperText={statusFields["ConfirmPassword"].message}
           color={statusFields["ConfirmPassword"].status}
-          focused={statusFields['ConfirmPassword'].status ? true : false}
+          focused={statusFields["ConfirmPassword"].status ? true : false}
           onChange={handleConfirmPasswordChange}
-          onBlur={handleFieldBlur}
           onFocus={handleConfirmPasswordChange}
           name="ConfirmPassword"
         />
@@ -253,6 +260,40 @@ const Register_Form_1 = ({ option }) => {
       <Button variant="contained" onClick={onHandleForm}>
         next
       </Button>
+    </div>
+  );
+};
+
+const Register_Form_2 = ({ option }) => {
+  const email = localStorage.getItem("VDREAM_EMAIL_REGISTER");
+  const [code, setCode] = useState("");
+  const [key, setKey] = useState(1);
+
+  useEffect(() => {
+    // if value was cleared, set key to re-render the element
+    if (code.length === 0) {
+      setKey(key + 1);
+      return;
+    }
+    // do something with the pin
+  }, [code]);
+
+  return (
+    <div className="Register_Form_2">
+      <div className="title">
+        <h1>Verification code</h1>
+        <p>
+          Enter the verification code sent to <b>{email}</b>{" "}
+        </p>
+      </div>
+
+      <ReactCodeInput
+        type="number"
+        fields={6}
+        onChange={(code) => setCode(code)}
+        value={code}
+        key={key}
+      />
     </div>
   );
 };
@@ -273,7 +314,7 @@ const Register = () => {
       desc: "Verify your email by entering the secret code sent to your email. Do not share this code in any way.",
       status: "coming",
       icon: "bi bi-envelope-check",
-      render: () => <h1>Form 2</h1>,
+      render: (option) => <Register_Form_2 option={option} />,
     },
     {
       id: "register-form-3",
