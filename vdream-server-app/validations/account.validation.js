@@ -19,6 +19,19 @@ const accountValidateSchema = checkSchema({
       options: checkIfEmailExists
     },
   },
+  // Password: {
+  //   notEmpty: {
+  //     errorMessage: "Password is required",
+  //   },
+  //   isLength: {
+  //     options: { min: 8 },
+  //     errorMessage: 'Password should be at least 8 chars',
+  //   }
+  // },
+});
+
+
+const createPasswordSchema = checkSchema({
   Password: {
     notEmpty: {
       errorMessage: "Password is required",
@@ -32,5 +45,6 @@ const accountValidateSchema = checkSchema({
 
 
 module.exports = {
-    accountValidateSchema
+    accountValidateSchema,
+    createPasswordSchema
 }

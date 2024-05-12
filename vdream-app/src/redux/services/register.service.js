@@ -4,9 +4,8 @@ import axios from "axios";
 
 
 
-
-const createAccount = createAsyncThunk("register", async (args) => {
- 
+// Create account with email address
+const createAccount = createAsyncThunk("CREATE_ACCOUNT", async (args) => {
   var response = await axios({
     method: "post",
     url: process.env.REACT_APP_BASE_URL + `api/accounts/register`,
@@ -19,19 +18,34 @@ const createAccount = createAsyncThunk("register", async (args) => {
   return response.data;
 });
 
-
-const verifyAccount = createAsyncThunk("register", async (email, password) => {
+// Verify Email 
+const verifyAccount = createAsyncThunk("VERIFY_ACCOUNT", async (args) => {
   var response = await axios({
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + `api/accounts/register`,
+    url: process.env.REACT_APP_BASE_URL + `api/accounts/verify`,
     headers: {},
     data: {
-      Email: email,
-      Password: password
+      Email: args.Email,
+      Code: args.Code
     },
   });
   return response.data;
 });
 
+// Create password
+const createPassword = createAsyncThunk("CREATE_PASSWORD", async (args) => {
+  var response = await axios({
+    method: "post",
+    url: process.env.REACT_APP_BASE_URL + `api/accounts/createPassword`,
+    headers: {
+      authorization: "Bearer " + args.AccessToken
+    },
+    data: {
+      Email: args.Email,
+      Password: args.Password
+    },
+  });
+  return response.data;
+})
 
-export default {createAccount, verifyAccount} 
+export default {createAccount, verifyAccount, createPassword} 

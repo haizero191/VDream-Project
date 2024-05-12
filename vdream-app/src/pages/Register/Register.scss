@@ -77,11 +77,18 @@
   }
 
   .Register_Form_2 {
-    width: 100%;
+    margin: 0 auto;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    .verify-btn {
+      width: 100%!important;
+      margin-top: 20px;
+      height: 45px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
     .title {
         margin-bottom: 40px;
         h1 {
@@ -93,6 +100,7 @@
         }
     }
     .react-code-input {
+      
       input {
         width: 80px!important;
         height: 80px!important;
@@ -106,5 +114,28 @@
         margin: 0; /* Optional for better alignment */
       }
     }
+
+    .resend-code {
+      width: 100%;
+      margin-top: 20px;
+      font-size: 14px;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      
+      span {
+        color: black;
+      }
+      a {
+        cursor: pointer;
+        color: #386dfe;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .Register_Form_3 {
+    width: 100%;
   }
 }

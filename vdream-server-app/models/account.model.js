@@ -8,7 +8,7 @@ const accountSchema = new mongoose.Schema({
   },
   Password: {
     type: String,
-    required: true,
+    required: false,
   },
   Type: {
     type: String,

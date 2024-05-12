@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const AccountController = require("../controllers/account.controller");
 const AccountMiddleware = require("../middlewares/account.middleware");
-const { accountValidateSchema } = require("../validations/account.validation");
+const { accountValidateSchema, createPasswordSchema } = require("../validations/account.validation");
 const authMiddleWare = require("../middlewares/auth.middleware");
 
 
@@ -26,6 +26,9 @@ router.post(
 
 // Account Register Verify Email
 router.post("/verify", AccountController.verify);
+
+// Account Register Verify Email
+router.post("/createPassword", authMiddleWare, createPasswordSchema, AccountController.createPassword);
 
 // Account Initial endpoint
 router.get("/", AccountController.index);

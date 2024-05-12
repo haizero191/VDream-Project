@@ -26,6 +26,8 @@ import Loading from "../../components/Loading/Loading";
 // Import react-code-input
 import ReactCodeInput from "react-code-input";
 
+
+// Form 1 ================================================
 const Register_Form_1 = ({ option }) => {
   const dispatch = useDispatch();
   const MS = useMS();
@@ -34,7 +36,6 @@ const Register_Form_1 = ({ option }) => {
 
   const [formData, setFormData] = useState({
     Email: "",
-    Password: "",
   });
 
   const [statusFields, setStatusFields] = useState({
@@ -43,24 +44,18 @@ const Register_Form_1 = ({ option }) => {
       error: true,
       message: "",
     },
-    Password: {
-      status: null,
-      error: true,
-      message: "",
-    },
-    ConfirmPassword: {
-      status: null,
-      error: true,
-      message: "",
-    },
   });
+
+  //Test Next from
+  // useEffect(() => {
+  //   MS.next();
+  // }, []);
 
   useEffect(() => {
     if (checkFormValid(statusFields)) {
       dispatch(
         register.createAccount({
           Email: formData.Email,
-          Password: formData.Password,
         })
       );
     }
@@ -68,7 +63,9 @@ const Register_Form_1 = ({ option }) => {
 
   useEffect(() => {
     setIsLoading(data.isLoading);
+  }, [data])
 
+  useEffect(() => {
     if (!data.isLoading) {
       if (data.dataProcess[0]) {
         if (!data.dataProcess[0].success) {
@@ -80,7 +77,7 @@ const Register_Form_1 = ({ option }) => {
         }
       }
     }
-  }, [data]);
+  }, [data.dataProcess[0]]);
 
   const handleFormError = (stack) => {
     stack.map((error) => {
@@ -107,13 +104,224 @@ const Register_Form_1 = ({ option }) => {
     const form = document.querySelector(".Register_Form_1");
     const elements = form.querySelectorAll("[data-ms]");
     const dataObject = {};
+    elements.forEach((element) => {
+      const dataMsValue = element.getAttribute("data-ms");
+      dataObject[dataMsValue] = element.value;
+    });
+    setFormData({ ...dataObject });
+  };
 
+  // Check Email valid
+  const validateEmail = (email) => {
+    const re =
+      /^(([^<>()\[\]\\.,;:\s@"]+)(\.[^<>()\[\]\\.,;:\s@"]+)*)@(([^<>()\[\]\\.,;:\s@"]+)(\.[^<>()\[\]\\.,;:\s@"]+)*)$/;
+    return re.test(email);
+  };
+
+  // Handle email input change
+  const handleEmailChange = (event) => {
+    if (event.target.value === "") {
+      setStatusFields({
+        ...statusFields,
+        Email: { status: "error", error: true, message: "Field is required" },
+      });
+    } else {
+      if (!validateEmail(event.target.value)) {
+        setStatusFields({
+          ...statusFields,
+          Email: { status: "error", error: true, message: "Invalid email" },
+        });
+      } else {
+        setStatusFields({
+          ...statusFields,
+          Email: { status: "success", error: false, message: "" },
+        });
+      }
+    }
+  };
+
+  return (
+    <div className="Register_Form_1">
+      {isLoading ? <Loading /> : <></>}
+      <Box
+        component="form"
+        sx={{
+          "& > :not(style)": { mb: 3, width: "100%" },
+        }}
+        autoComplete="off"
+      >
+        <TextField
+          id="outlined-basic"
+          label="Email"
+          variant="outlined"
+          inputProps={{ "data-ms": "Email" }}
+          name="Email"
+          helperText={statusFields["Email"].message}
+          color={statusFields["Email"].status}
+          onChange={handleEmailChange}
+          onFocus={handleEmailChange}
+          focused={statusFields["Email"].status ? true : false}
+        />
+
+        {/* <TextField
+          id="outlined-basic"
+          label="Password"
+          variant="outlined"
+          type="password"
+          inputProps={{ "data-ms": "Password" }}
+          helperText={statusFields["Password"].message}
+          color={statusFields["Password"].status}
+          onChange={handlePasswordChange}
+          onFocus={handlePasswordChange}
+          focused={statusFields["Password"].status ? true : false}
+          name="Password"
+        /> */}
+
+        {/* <TextField
+          id="outlined-basic"
+          label="Confirm Password"
+          variant="outlined"
+          type="password"
+          helperText={statusFields["ConfirmPassword"].message}
+          color={statusFields["ConfirmPassword"].status}
+          focused={statusFields["ConfirmPassword"].status ? true : false}
+          onChange={handleConfirmPasswordChange}
+          onFocus={handleConfirmPasswordChange}
+          name="ConfirmPassword"
+        /> */}
+      </Box>
+
+      <Button variant="contained" onClick={onHandleForm}>
+        next
+      </Button>
+    </div>
+  );
+};
+
+// Form 2 ================================================
+const Register_Form_2 = ({ option }) => {
+  const email = localStorage.getItem("VDREAM_EMAIL_REGISTER");
+  const [code, setCode] = useState("");
+  const [key, setKey] = useState(1);
+  const data = useSelector((state) => state.register);
+  const dispatch = useDispatch();
+  const MS = useMS();
+
+  // //Test Next from
+  // useEffect(() => {
+  //   MS.next();
+  // }, []);
+
+  useEffect(() => {
+    // if value was cleared, set key to re-render the element
+    if (code.length === 0) {
+      setKey(key + 1);
+      return;
+    }
+    dispatch(
+      register.verifyAccount({
+        Email: email,
+        Code: code,
+      })
+    );
+  }, [code]);
+
+
+  useEffect(() => {
+    if (!data.isLoading) {
+      if (data.dataProcess[1]) {
+        if (!data.dataProcess[1].success) {
+          // Handle errors here....
+        } else {
+          MS.next();
+        }
+      }
+    }
+  }, [data.dataProcess[1]])
+
+  return (
+    <div className="Register_Form_2">
+      <div className="title">
+        <h1>Verification code</h1>
+        <p>
+          Enter the verification code sent to <b>{email}</b>{" "}
+        </p>
+      </div>
+
+      <ReactCodeInput
+        type="number"
+        fields={6}
+        onChange={(code) => setCode(code)}
+        value={code}
+        key={key}
+      />
+      <Button variant="contained" className="verify-btn">
+        Verify
+      </Button>
+      <div className="resend-code">
+        <span>Didn'n receive the verification OTP ?</span>
+        <a>Resend OTP code</a>
+      </div>
+    </div>
+  );
+};
+
+// Form 3
+const Register_Form_3 = ({ option }) => {
+  const [formData, setFormData] = useState({
+    Password: "",
+    ConfirmPassword: "",
+  });
+  const data = useSelector((state) => state.register);
+  const dispatch = useDispatch();
+  const email = localStorage.getItem("VDREAM_EMAIL_REGISTER");
+  const [statusFields, setStatusFields] = useState({
+    Password: {
+      status: null,
+      error: true,
+      message: "",
+    },
+    ConfirmPassword: {
+      status: null,
+      error: true,
+      message: "",
+    },
+  });
+  const MS = useMS();
+
+
+  useEffect(() => {
+    if (!data.isLoading) {
+      if (data.dataProcess[2]) {
+        if (!data.dataProcess[2].success) {
+          console.log("Fail...")
+          // var errorStack = data.dataProcess[0].error.stack;
+          // handleFormError(errorStack);
+        } else {
+          // localStorage.setItem("VDREAM_EMAIL_REGISTER", formData.Email);
+          MS.next();
+        }
+      }
+    }
+  }, [data.dataProcess[2]])
+
+
+  // Handle submit form
+  const onHandleForm = () => {
+    const form = document.querySelector(".Register_Form_3");
+    const elements = form.querySelectorAll("[data-ms]");
+    const dataObject = {};
     elements.forEach((element) => {
       const dataMsValue = element.getAttribute("data-ms");
       dataObject[dataMsValue] = element.value;
     });
 
-    setFormData({ ...dataObject });
+    if(dataObject.Password === dataObject.ConfirmPassword) 
+      dispatch(register.createPassword({
+        Email: email,
+        Password: dataObject.Password,
+        AccessToken: localStorage.getItem(process.env.REACT_APP_ACCESSTOKEN_KEY_STORE)
+      }))
   };
 
   // Handle confirm password input change
@@ -178,37 +386,8 @@ const Register_Form_1 = ({ option }) => {
     }
   };
 
-  const validateEmail = (email) => {
-    const re =
-      /^(([^<>()\[\]\\.,;:\s@"]+)(\.[^<>()\[\]\\.,;:\s@"]+)*)@(([^<>()\[\]\\.,;:\s@"]+)(\.[^<>()\[\]\\.,;:\s@"]+)*)$/;
-    return re.test(email);
-  };
-
-  // Handle email input change
-  const handleEmailChange = (event) => {
-    if (event.target.value === "") {
-      setStatusFields({
-        ...statusFields,
-        Email: { status: "error", error: true, message: "Field is required" },
-      });
-    } else {
-      if (!validateEmail(event.target.value)) {
-        setStatusFields({
-          ...statusFields,
-          Email: { status: "error", error: true, message: "Invalid email" },
-        });
-      } else {
-        setStatusFields({
-          ...statusFields,
-          Email: { status: "success", error: false, message: "" },
-        });
-      }
-    }
-  };
-
   return (
-    <div className="Register_Form_1">
-      {isLoading ? <Loading /> : <></>}
+    <div className="Register_Form_3">
       <Box
         component="form"
         sx={{
@@ -216,19 +395,6 @@ const Register_Form_1 = ({ option }) => {
         }}
         autoComplete="off"
       >
-        <TextField
-          id="outlined-basic"
-          label="Email"
-          variant="outlined"
-          inputProps={{ "data-ms": "Email" }}
-          name="Email"
-          helperText={statusFields["Email"].message}
-          color={statusFields["Email"].status}
-          onChange={handleEmailChange}
-          onFocus={handleEmailChange}
-          focused={statusFields["Email"].status ? true : false}
-        />
-
         <TextField
           id="outlined-basic"
           label="Password"
@@ -248,6 +414,7 @@ const Register_Form_1 = ({ option }) => {
           label="Confirm Password"
           variant="outlined"
           type="password"
+          inputProps={{ "data-ms": "ConfirmPassword" }}
           helperText={statusFields["ConfirmPassword"].message}
           color={statusFields["ConfirmPassword"].status}
           focused={statusFields["ConfirmPassword"].status ? true : false}
@@ -257,56 +424,23 @@ const Register_Form_1 = ({ option }) => {
         />
       </Box>
 
-      <Button variant="contained" onClick={onHandleForm}>
-        next
-      </Button>
-    </div>
-  );
-};
-
-const Register_Form_2 = ({ option }) => {
-  const email = localStorage.getItem("VDREAM_EMAIL_REGISTER");
-  const [code, setCode] = useState("");
-  const [key, setKey] = useState(1);
-
-  useEffect(() => {
-    // if value was cleared, set key to re-render the element
-    if (code.length === 0) {
-      setKey(key + 1);
-      return;
-    }
-    // do something with the pin
-  }, [code]);
-
-  return (
-    <div className="Register_Form_2">
-      <div className="title">
-        <h1>Verification code</h1>
-        <p>
-          Enter the verification code sent to <b>{email}</b>{" "}
-        </p>
-      </div>
-
-      <ReactCodeInput
-        type="number"
-        fields={6}
-        onChange={(code) => setCode(code)}
-        value={code}
-        key={key}
-      />
+      <Button variant="contained" onClick={onHandleForm}>Create</Button>
     </div>
   );
 };
 
 const Register = () => {
-  const initConfig = [
+  const [initConfig, setInitConfig] = useState([
     {
       id: "register-form-1",
-      title: "Create your account",
-      desc: "Register your account with email address and password.",
+      title: "Enter your email",
+      desc: "Register your account with email address.",
       status: "active",
       icon: "bi bi-envelope-at",
       render: (option) => <Register_Form_1 option={option} />,
+      initialRendered: () => {
+        console.log("Initial Rendered");
+      },
     },
     {
       id: "register-form-2",
@@ -315,9 +449,23 @@ const Register = () => {
       status: "coming",
       icon: "bi bi-envelope-check",
       render: (option) => <Register_Form_2 option={option} />,
+      initialRendered: () => {
+        console.log("Initial Rendered");
+      },
     },
     {
       id: "register-form-3",
+      title: "Create your password",
+      desc: "Create your password to login Vdream Account",
+      status: "coming",
+      icon: "bi bi-envelope-check",
+      render: (option) => <Register_Form_3 option={option} />,
+      initialRendered: () => {
+        console.log("Initial Rendered");
+      },
+    },
+    {
+      id: "register-form-4",
       title: "Registered account type",
       desc: `Personal Account:  Use the service for personal, non-commercial purposes.
       Organization Account:  Businesses, non-profit organizations.
@@ -325,16 +473,22 @@ const Register = () => {
       status: "coming",
       icon: "bi bi-person-bounding-box",
       render: () => <h1>Form 3</h1>,
+      initialRendered: () => {
+        console.log("Initial Rendered");
+      },
     },
     {
-      id: "register-form-4",
+      id: "register-form-5",
       title: "Complete your profile",
       desc: `Fill in the information to complete your application.`,
       status: "coming",
       icon: "bi bi-info-circle",
       render: () => <h1>Form 4</h1>,
+      initialRendered: () => {
+        console.log("Initial Rendered");
+      },
     },
-  ];
+  ]);
 
   return (
     <div className="Register">
