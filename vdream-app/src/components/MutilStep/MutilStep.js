@@ -52,7 +52,7 @@ export const MSNav = () => {
               }
               key={index}
             >
-              <span>{index}</span>
+              <span>{index + 1}</span>
               <i className="bi bi-check"></i>
             </div>
           );
@@ -96,11 +96,6 @@ export const MSContent = () => {
     </div>
   );
 };
-
-
-
-export const MSPrevButton = () => {};
-
 
 export const MSTitle = () => {
   const { options } = useContext(MutilStepContext);

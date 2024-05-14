@@ -26,7 +26,6 @@ import Loading from "../../components/Loading/Loading";
 // Import react-code-input
 import ReactCodeInput from "react-code-input";
 
-
 // Form 1 ================================================
 const Register_Form_1 = ({ option }) => {
   const dispatch = useDispatch();
@@ -46,11 +45,6 @@ const Register_Form_1 = ({ option }) => {
     },
   });
 
-  //Test Next from
-  // useEffect(() => {
-  //   MS.next();
-  // }, []);
-
   useEffect(() => {
     if (checkFormValid(statusFields)) {
       dispatch(
@@ -63,7 +57,7 @@ const Register_Form_1 = ({ option }) => {
 
   useEffect(() => {
     setIsLoading(data.isLoading);
-  }, [data])
+  }, [data]);
 
   useEffect(() => {
     if (!data.isLoading) {
@@ -207,7 +201,6 @@ const Register_Form_2 = ({ option }) => {
   const dispatch = useDispatch();
   const MS = useMS();
 
-  // //Test Next from
   // useEffect(() => {
   //   MS.next();
   // }, []);
@@ -226,7 +219,6 @@ const Register_Form_2 = ({ option }) => {
     );
   }, [code]);
 
-
   useEffect(() => {
     if (!data.isLoading) {
       if (data.dataProcess[1]) {
@@ -237,7 +229,7 @@ const Register_Form_2 = ({ option }) => {
         }
       }
     }
-  }, [data.dataProcess[1]])
+  }, [data.dataProcess[1]]);
 
   return (
     <div className="Register_Form_2">
@@ -266,12 +258,8 @@ const Register_Form_2 = ({ option }) => {
   );
 };
 
-// Form 3
+// Form 3 ================================================
 const Register_Form_3 = ({ option }) => {
-  const [formData, setFormData] = useState({
-    Password: "",
-    ConfirmPassword: "",
-  });
   const data = useSelector((state) => state.register);
   const dispatch = useDispatch();
   const email = localStorage.getItem("VDREAM_EMAIL_REGISTER");
@@ -289,22 +277,21 @@ const Register_Form_3 = ({ option }) => {
   });
   const MS = useMS();
 
+  useEffect(() => {
+    MS.next();
+  }, []);
 
   useEffect(() => {
     if (!data.isLoading) {
       if (data.dataProcess[2]) {
         if (!data.dataProcess[2].success) {
-          console.log("Fail...")
-          // var errorStack = data.dataProcess[0].error.stack;
-          // handleFormError(errorStack);
+          alert("something...wrong!");
         } else {
-          // localStorage.setItem("VDREAM_EMAIL_REGISTER", formData.Email);
           MS.next();
         }
       }
     }
-  }, [data.dataProcess[2]])
-
+  }, [data.dataProcess[2]]);
 
   // Handle submit form
   const onHandleForm = () => {
@@ -316,12 +303,16 @@ const Register_Form_3 = ({ option }) => {
       dataObject[dataMsValue] = element.value;
     });
 
-    if(dataObject.Password === dataObject.ConfirmPassword) 
-      dispatch(register.createPassword({
-        Email: email,
-        Password: dataObject.Password,
-        AccessToken: localStorage.getItem(process.env.REACT_APP_ACCESSTOKEN_KEY_STORE)
-      }))
+    if (dataObject.Password === dataObject.ConfirmPassword)
+      dispatch(
+        register.createPassword({
+          Email: email,
+          Password: dataObject.Password,
+          AccessToken: localStorage.getItem(
+            process.env.REACT_APP_ACCESSTOKEN_KEY_STORE
+          ),
+        })
+      );
   };
 
   // Handle confirm password input change
@@ -424,13 +415,20 @@ const Register_Form_3 = ({ option }) => {
         />
       </Box>
 
-      <Button variant="contained" onClick={onHandleForm}>Create</Button>
+      <Button variant="contained" onClick={onHandleForm}>
+        Create
+      </Button>
     </div>
   );
 };
 
+// Form 4 ================================================
+const Register_Form_4 = ({ option }) => {
+  return <div className="Register_Form_4"></div>;
+};
+
 const Register = () => {
-  const [initConfig, setInitConfig] = useState([
+  const initConfig = [
     {
       id: "register-form-1",
       title: "Enter your email",
@@ -467,12 +465,10 @@ const Register = () => {
     {
       id: "register-form-4",
       title: "Registered account type",
-      desc: `Personal Account:  Use the service for personal, non-commercial purposes.
-      Organization Account:  Businesses, non-profit organizations.
-      `,
+      desc: `Personal Account | Organization Account`,
       status: "coming",
       icon: "bi bi-person-bounding-box",
-      render: () => <h1>Form 3</h1>,
+      render: () => <Register_Form_4 />,
       initialRendered: () => {
         console.log("Initial Rendered");
       },
@@ -488,7 +484,7 @@ const Register = () => {
         console.log("Initial Rendered");
       },
     },
-  ]);
+  ];
 
   return (
     <div className="Register">
@@ -496,15 +492,7 @@ const Register = () => {
         <MSContrainer options={initConfig}>
           <Box sx={{ height: "100%" }}>
             <Grid container height={"100%"}>
-              <Grid item xs={8}>
-                <div className="form-step-group">
-                  {/* Form content render */}
-                  <div className="form-step-group-container">
-                    <MSContent />
-                  </div>
-                </div>
-              </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 <div className="form-step-desc">
                   <MSNav></MSNav>
                   <div className="form-step-desc-container">
@@ -515,6 +503,14 @@ const Register = () => {
                   <div className="bottom-title">
                     <p>Be your self</p>
                     <p>Build your future</p>
+                  </div>
+                </div>
+              </Grid>
+              <Grid item xs={9}>
+                <div className="form-step-group">
+                  {/* Form content render */}
+                  <div className="form-step-group-container">
+                    <MSContent />
                   </div>
                 </div>
               </Grid>

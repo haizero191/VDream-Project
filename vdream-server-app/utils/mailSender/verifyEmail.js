@@ -10,7 +10,6 @@ const formatCurrency = (amount) => {
   return formatter.format(amount);
 };
 
-
 const verifyEmailForm = (email, code) => {
     return `
     <!DOCTYPE html>
